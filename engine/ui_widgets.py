@@ -208,27 +208,57 @@ class SuggestedReplyButtons:
         return None
 
     def draw(self, surface: pygame.Surface):
+        import math
+        t = pygame.time.get_ticks() / 1000.0
         for i, (opt, r) in enumerate(zip(self.options, self._option_rects)):
             is_hover = (i == self.hovered_index)
+            # sombra suave
+            shadow = pygame.Surface((r.width, r.height), pygame.SRCALPHA)
+            pygame.draw.rect(shadow, (0, 0, 0, 60), shadow.get_rect(), border_radius=10)
+            surface.blit(shadow, (r.x + 2, r.y + 2))
+
             box = pygame.Surface((r.width, r.height), pygame.SRCALPHA)
-            box.fill((60, 20, 35, 235) if is_hover else (25, 12, 18, 220))
-            pygame.draw.rect(box, (255, 159, 197) if is_hover else (150, 100, 120), box.get_rect(), width=2)
+            # gradiente sutil y esquinas redondeadas
+            base_alpha = 240 if is_hover else 215
+            col_top = (70, 28, 48, base_alpha) if is_hover else (32, 18, 26, base_alpha)
+            col_bot = (45, 18, 32, base_alpha) if is_hover else (22, 12, 18, base_alpha)
+            for yy in range(r.height):
+                ratio = yy / max(1, r.height)
+                cr = int(col_top[0] * (1 - ratio) + col_bot[0] * ratio)
+                cg = int(col_top[1] * (1 - ratio) + col_bot[1] * ratio)
+                cb = int(col_top[2] * (1 - ratio) + col_bot[2] * ratio)
+                pygame.draw.line(box, (cr, cg, cb, base_alpha), (0, yy), (r.width, yy))
+            border_col = (255, 140, 190, 255) if is_hover else (170, 110, 130, 220)
+            pygame.draw.rect(box, border_col, box.get_rect(), width=2, border_radius=10)
+            # brillo superior
+            if is_hover:
+                pygame.draw.line(box, (255, 200, 220, 60), (10, 2), (r.width - 10, 2), 1)
             surface.blit(box, r.topleft)
 
             lines = self._wrap_option(opt, self.rect.width)
-            ty = r.y + 9
+            ty = r.y + 10
             number_prefix = f"{i+1}. "
             for j, line in enumerate(lines):
                 text = (number_prefix if j == 0 else "   ") + line
-                surf = self.font.render(text, True, (255, 255, 255))
+                # sombra texto
+                s_surf = self.font.render(text, True, (15, 5, 10))
+                surface.blit(s_surf, (r.x + 13, ty + 1))
+                surf = self.font.render(text, True, (255, 245, 248) if is_hover else (235, 230, 232))
                 surface.blit(surf, (r.x + 12, ty))
-                ty += surf.get_height()
+                ty += surf.get_height() + 2
 
         if self.free_text_rect:
             r = self.free_text_rect
+            # pulso sutil
+            pulse = 0.5 + 0.5 * math.sin(t * 2.5)
+            glow_alpha = int(30 + 25 * pulse)
+            glow = pygame.Surface((r.width + 8, r.height + 8), pygame.SRCALPHA)
+            pygame.draw.rect(glow, (255, 120, 170, glow_alpha), glow.get_rect(), border_radius=12)
+            surface.blit(glow, (r.x - 4, r.y - 4))
+
             box = pygame.Surface((r.width, r.height), pygame.SRCALPHA)
-            box.fill((40, 20, 30, 220))
-            pygame.draw.rect(box, (200, 150, 170), box.get_rect(), width=2)
+            pygame.draw.rect(box, (48, 24, 36, 230), box.get_rect(), border_radius=10)
+            pygame.draw.rect(box, (220, 160, 180, 255), box.get_rect(), width=2, border_radius=10)
             surface.blit(box, r.topleft)
-            surf = self.font.render("✏️  Escribir mi propia respuesta...", True, (230, 210, 220))
-            surface.blit(surf, (r.x + 12, r.y + (r.height - surf.get_height()) // 2))
+            surf = self.font.render("✏️  Escribir mi propia respuesta...", True, (245, 220, 230))
+            surface.blit(surf, (r.x + 14, r.y + (r.height - surf.get_height()) // 2))
