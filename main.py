@@ -79,16 +79,27 @@ class Game:
         self.sprite.set_mode(self.game_state.sakura_mode)
         self.current_background = "classroom"
 
+        # Caja de diálogo más alta para evitar que texto largo se salga.
+        # Antes: top 0.76h, height 0.16h. Ahora: top 0.68h, height 0.22h
         dialogue_rect = pygame.Rect(
-            int(self.screen_w * 0.04), self.screen_h - int(self.screen_h * 0.24),
-            int(self.screen_w * 0.92), int(self.screen_h * 0.16),
+            int(self.screen_w * 0.035), self.screen_h - int(self.screen_h * 0.32),
+            int(self.screen_w * 0.93), int(self.screen_h * 0.22),
         )
-        self.dialogue_box = DialogueBox(self.font_dialogue, self.font_name, dialogue_rect,
-                                         wrap_width_chars=int(self.screen_w / 16))
+        self.dialogue_box = DialogueBox(
+            self.font_dialogue, self.font_name, dialogue_rect,
+            # wrap_width_chars queda obsoleto (ahora se usa wrap por píxeles),
+            # pero lo mantenemos por compatibilidad.
+            wrap_width_chars=int(self.screen_w / 14),
+            # Pasamos tamaños de fuente para escalado dinámico si el texto es muy largo.
+            base_font_size=self.font_dialogue.get_height(),
+            name_font_size=self.font_name.get_height(),
+        )
 
+        # Botones de respuesta, un poco más compactos y arriba,
+        # para no solapar con la caja de diálogo más grande.
         replies_rect = pygame.Rect(
-            int(self.screen_w * 0.62), int(self.screen_h * 0.08),
-            int(self.screen_w * 0.34), int(self.screen_h * 0.62),
+            int(self.screen_w * 0.60), int(self.screen_h * 0.06),
+            int(self.screen_w * 0.36), int(self.screen_h * 0.58),
         )
         self.reply_buttons = SuggestedReplyButtons(self.font_menu, replies_rect)
 
@@ -188,10 +199,11 @@ class Game:
 
     def _apply_director_response(self, result: ai_director.DirectorResponse):
         self.sprite.set_mode(result.expression)
-        self.game_state.sakura_mode = result.expression if result.expression in (
-            "normal", "happy", "blush", "sad", "angry", "surprised", "sleepy", "playful",
-            "jealous", "yandere",
-        ) else self.game_state.sakura_mode
+        # Guardar el modo en el estado persistente si es una expresión válida.
+        # Usamos la lista centralizada de expresiones válidas del director,
+        # así al agregar nuevas reacciones no hay que tocar este archivo.
+        if result.expression in ai_director.VALID_EXPRESSIONS:
+            self.game_state.sakura_mode = result.expression
 
         if result.background:
             self.current_background = result.background
