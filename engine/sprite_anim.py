@@ -19,26 +19,39 @@ import pygame
 from engine.assets import load_image
 
 # Modos que usan temblor nervioso/erratico en vez de balanceo suave.
-SHAKE_MODES = {"yandere", "jealous", "scared"}
+# Expandido para cubrir todas las emociones intensas / ansiosas.
+SHAKE_MODES = {
+    "yandere", "jealous", "scared", "panicked", "nervous",
+    "worried", "upset", "hurt", "crying", "shocked", "angry",
+    "offended", "annoyed", "flustered"
+}
 
 # El estado interno usa "normal" pero el archivo de imagen se llama
 # "neutral" (por convencion heredada del diseño de sprites). Este
 # mapeo evita FileNotFoundError por el desajuste de nombres.
 MODE_TO_IMAGE_STEM = {
     "normal": "neutral",
+    # algunos alias útiles por si la IA devuelve variantes:
+    "smiling": "happy",
 }
 
 # Lista completa de expresiones soportadas por el sprite (debe reflejar
 # los archivos sakura_<nombre>.png disponibles en assets/images/).
 ALL_EXPRESSIONS = {
+    # set base original (30)
     "normal", "happy", "blush", "sad", "angry", "surprised", "sleepy",
     "playful", "jealous", "yandere", "crying", "laughing", "confused",
     "pouting", "lovestruck", "scared", "thoughtful", "smug", "determined",
     "embarrassed", "shy", "excited", "winking", "disgusted", "proud",
     "worried", "sneaky", "relieved", "starstruck", "cold",
+    # set ampliado (20 nuevas)
+    "annoyed", "bored", "curious", "flustered", "giggling",
+    "hurt", "impressed", "nervous", "offended", "panicked",
+    "satisfied", "serious", "shocked", "sighing", "smiling",
+    "teasing", "tired", "touched", "triumphant", "upset",
 }
 
-# Total: 30 expresiones disponibles.
+# Total: 50 expresiones disponibles.
 
 
 class SakuraSprite:
