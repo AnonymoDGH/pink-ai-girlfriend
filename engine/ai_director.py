@@ -24,8 +24,20 @@ from dataclasses import dataclass, field
 log = logging.getLogger("ai_director")
 
 VALID_EXPRESSIONS = {
+    # básicas (originales)
     "normal", "happy", "blush", "sad", "angry",
     "surprised", "sleepy", "playful", "jealous", "yandere",
+    # ampliadas – emociones profundas
+    "crying", "laughing", "confused", "pouting", "lovestruck",
+    "scared", "thoughtful", "smug", "determined", "embarrassed",
+    # ampliadas – sociales / sutiles
+    "shy", "excited", "winking", "disgusted", "proud",
+    "worried", "sneaky", "relieved", "starstruck", "cold",
+    # extra – para aún más variedad
+    "annoyed", "bored", "curious", "flustered", "giggling",
+    "hurt", "impressed", "nervous", "offended", "panicked",
+    "satisfied", "serious", "shocked", "sighing", "smiling",
+    "teasing", "tired", "touched", "triumphant", "upset",
 }
 VALID_BACKGROUNDS = {
     "classroom", "bedroom", "rooftop", "cafe", "festival", "street", "classroom_dark",
@@ -39,8 +51,12 @@ RESPONSE_SCHEMA_INSTRUCTIONS = """Debes responder SIEMPRE con un unico objeto JS
  "background": "una_palabra_de_la_lista_de_fondos_o_null_si_no_cambia",
  "suggested_replies": ["opcion corta 1", "opcion corta 2", "opcion corta 3"]}
 
-Expresiones validas (elige la que mejor refleje el tono de tu dialogue):
-normal, happy, blush, sad, angry, surprised, sleepy, playful, jealous, yandere
+Expresiones validas (50 emociones, elige la que mejor refleje el tono):
+normal, happy, blush, sad, angry, surprised, sleepy, playful, jealous, yandere,
+crying, laughing, confused, pouting, lovestruck, scared, thoughtful, smug, determined, embarrassed,
+shy, excited, winking, disgusted, proud, worried, sneaky, relieved, starstruck, cold,
+annoyed, bored, curious, flustered, giggling, hurt, impressed, nervous, offended, panicked,
+satisfied, serious, shocked, sighing, smiling, teasing, tired, touched, triumphant, upset
 
 Fondos validos (usa null si la escena no debe cambiar de lugar):
 classroom, bedroom, rooftop, cafe, festival, street, classroom_dark
